@@ -2,6 +2,8 @@
 
 #include <math.h>
 
+static const int PIXEL_X = 640;
+static const int PIXEL_Y = 480;
 
 //-------------------------------------------------------------------------------------------------
 // Voxel
@@ -247,4 +249,18 @@ bool Volume::loadFromFile(QString filename, QProgressBar* progressBar)
 	std::cout << "Loaded VOLUME with dimensions " << m_Width << " x " << m_Height << " x " << m_Depth << std::endl;
 
 	return true;
+}
+
+std::vector<float> Volume::getVolume()
+{
+	std::vector<float> out;
+	out.resize(PIXEL_X * PIXEL_Y);
+
+	for (int i = 0; i < PIXEL_Y; i++){
+		for (int j = 0; j < PIXEL_X; j++){
+			out[i*PIXEL_X + j] = m_Voxels[i].getValue();
+		}
+	}
+
+	return out;
 }

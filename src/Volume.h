@@ -81,6 +81,7 @@ class Volume
 		const int				size() const;
 
 		bool					loadFromFile(QString filename, QProgressBar* progressBar);
+		std::vector<float>		getVolume();
 
 
 	private:
