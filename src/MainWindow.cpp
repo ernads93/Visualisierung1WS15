@@ -13,6 +13,10 @@ MainWindow::MainWindow(QWidget *parent)
 
 	connect(m_Ui->actionOpen, SIGNAL(triggered()), this, SLOT(openFileAction()));
 	connect(m_Ui->actionClose, SIGNAL(triggered()), this, SLOT(closeAction()));
+
+	/*connect(m_Ui->xRotSlider, SIGNAL(valueChanged(int)), m_Ui->myGLWidget, SLOT(setXRotation(int)));
+	connect(m_Ui->yRotSlider, SIGNAL(valueChanged(int)), m_Ui->myGLWidget, SLOT(setYRotation(int)));
+	connect(m_Ui->zRotSlider, SIGNAL(valueChanged(int)), m_Ui->myGLWidget, SLOT(setYRotation(int)));*/
 }
 
 MainWindow::~MainWindow()
@@ -54,7 +58,8 @@ void MainWindow::openFileAction()
 
 			if (success) {
 				m_Ui->myGLWidget->setVolume(m_Volume);
-				m_Ui->myGLWidget->data = m_Volume->getVolume();
+				//m_Ui->myGLWidget->setData(m_Volume->getVolume());
+				//m_Ui->myGLWidget->data = m_Volume->getVolume();
 			}
 		}
 		else if (fn.substr(fn.find_last_of(".") + 1) == "gri")		// LOAD VECTORFIELD
@@ -91,6 +96,11 @@ void MainWindow::openFileAction()
 		{
 			m_Ui->labelTop->setText("ERROR loading file " + filename + "!");
 			m_Ui->progressBar->setValue(0);
+		}
+
+		if (success)
+		{
+			m_Ui->myGLWidget->fileLoaded = true;
 		}
 	}
 }

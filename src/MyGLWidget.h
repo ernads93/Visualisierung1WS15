@@ -28,23 +28,42 @@ public:
 	MyGLWidget(QWidget *parent = 0);
 	~MyGLWidget();
 
-	QSize sizeHint() const;
 	bool fileLoaded;
-	bool ready;
 	Volume* volume;
-	std::vector<float> data;
-	float pixel[640 * 480];
 
 	void setVolume(Volume* v);
 
 protected:
 	void initializeGL();
-	void resizeGL(int w, int h);
 	void paintGL();
+	void resizeGL(int width, int height);
+
+	QSize minimumSizeHint() const;
+	QSize sizeHint() const;
+	void mousePressEvent(QMouseEvent *event);
+	void mouseMoveEvent(QMouseEvent *event);
+
+public slots:
+	// slots for xyz-rotation slider
+	void setXRotation(int angle);
+	void setYRotation(int angle);
+	void setZRotation(int angle);
+
+signals:
+	// signaling rotation from mouse movement
+	void xRotationChanged(int angle);
+	void yRotationChanged(int angle);
+	void zRotationChanged(int angle);
 
 private:
-	QMatrix4x4 pMatrix;
-	QGLShaderProgram shaderProgram;
-	QVector<QVector3D> vertices;
+
+	void draw();
+
+	int xRot;
+	int yRot;
+	int zRot;
+
+	QPoint lastPos;
+
 };
 #endif
