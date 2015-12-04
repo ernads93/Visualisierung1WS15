@@ -6,10 +6,7 @@
 MyGLWidget::MyGLWidget(QWidget *parent) :
 QGLWidget(QGLFormat(QGL::SampleBuffers), parent)
 {
-	fileLoaded = false;
-	/*QTimer *timer = new QTimer(this);
-	connect(timer, SIGNAL(timeout()), this, SLOT(update()));
-	timer->start(50);*/
+	success = false;
 
 	xRot = 0;
 	yRot = 0;
@@ -40,7 +37,7 @@ static void qNormalizeAngle(int &angle)
 
 void MyGLWidget::setXRotation(int angle)
 {
-	std::cout << "set X Rotation" << std::endl;
+	//std::cout << "set X Rotation" << std::endl;
 	qNormalizeAngle(angle);
 	if (angle != xRot) {
 		xRot = angle;
@@ -71,7 +68,7 @@ void MyGLWidget::setZRotation(int angle)
 
 void MyGLWidget::initializeGL()
 {
-	qglClearColor(Qt::black);
+	qglClearColor(Qt::white);
 
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
@@ -91,7 +88,11 @@ void MyGLWidget::paintGL()
 	glRotatef(xRot / 16.0, 1.0, 0.0, 0.0);
 	glRotatef(yRot / 16.0, 0.0, 1.0, 0.0);
 	glRotatef(zRot / 16.0, 0.0, 0.0, 1.0);
-	draw();
+
+	if (success)
+	{
+		draw();
+	}
 }
 
 void MyGLWidget::resizeGL(int width, int height)
@@ -172,5 +173,8 @@ void MyGLWidget::setVolume(Volume* v)
 {
 	std::cout << "MyGLWidget set Volume" << std::endl;
 	this->volume = v;
+	
+	success = true;
+
 	//this->data = v->getVolume();
 }

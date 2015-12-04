@@ -28,7 +28,7 @@ public:
 	MyGLWidget(QWidget *parent = 0);
 	~MyGLWidget();
 
-	bool fileLoaded;
+	bool success;
 	Volume* volume;
 
 	void setVolume(Volume* v);

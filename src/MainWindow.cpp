@@ -47,7 +47,7 @@ void MainWindow::openFileAction()
 		m_Ui->labelTop->setText("Loading data ...");
 
 		// load data according to file extension
-		if (fn.substr(fn.find_last_of(".") + 1) == "dat")		// LOAD VOLUME
+		if (fn.substr(fn.find_last_of(".") + 1) == "dat")		// LOAD VOLUME      <----------------------
 		{
 			// create VOLUME
 			m_FileType.type = VOLUME;
@@ -58,8 +58,6 @@ void MainWindow::openFileAction()
 
 			if (success) {
 				m_Ui->myGLWidget->setVolume(m_Volume);
-				//m_Ui->myGLWidget->setData(m_Volume->getVolume());
-				//m_Ui->myGLWidget->data = m_Volume->getVolume();
 			}
 		}
 		else if (fn.substr(fn.find_last_of(".") + 1) == "gri")		// LOAD VECTORFIELD
@@ -98,10 +96,6 @@ void MainWindow::openFileAction()
 			m_Ui->progressBar->setValue(0);
 		}
 
-		if (success)
-		{
-			m_Ui->myGLWidget->fileLoaded = true;
-		}
 	}
 }
 
