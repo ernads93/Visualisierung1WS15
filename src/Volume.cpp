@@ -279,11 +279,31 @@ std::vector<float> Volume::getVolume()
 			//finds an intersection
 			bool isIntersect = isIntersection(start, end, m_p.v, intersection_1, intersection_2);
 
+			float maxIntensity = 0.f;
 
+			if (isIntersect) {
+				glm::vec3 front = glm::vec3(intersection_1.x, intersection_1.y, intersection_1.z);
+				glm::vec3 back = glm::vec3(intersection_2.x, intersection_2.y, intersection_2.z);
+
+				glm::vec3 direction = (back - front);
+				direction = glm::vec3(direction.x*sample_step_size / direction.z, direction.y*sample_step_size / direction.z, sample_step_size);
+
+				float value;
+
+				//Maximum-Intensity-Projektion
+				while (front.z < back.z){
+					//get voxel value and compare
+					value = m_Voxels[round(front.x) + m_Width*(round(front.y) + m_Depth*round(front.z))].getValue();
+					if (value > maxIntensity) {
+						maxIntensity = value;
+					}
+					//next
+					front = front + direction;
+				}
+			}
 			out[i*PIXEL_X + j] = m_Voxels[i].getValue();
 		}
 	}
-
 	return out;
 }
 
@@ -314,6 +334,7 @@ bool Volume::isIntersection(vec3 point_1, vec3 point_2, vec3 v, vec3& intersecti
 	Vector3 temp;
 
 	// check if parralel
+	//for X
 	if (v.x == 0){
 		if (v.y != 0 && v.z != 0){
 			if (searchIntersection(point_1, v, firstIntersectFound, intersection_1, intersection_2, Y, 0)) {
@@ -351,11 +372,137 @@ bool Volume::isIntersection(vec3 point_1, vec3 point_2, vec3 v, vec3& intersecti
 			}
 		}
 	}
+
+	//for Y
+	if (v.y == 0){
+		if (v.x != 0 && v.z != 0){
+			if (searchIntersection(point_1, v, firstIntersectFound, intersection_1, intersection_2, X, 0)) {
+				return true;
+			}
+			if (searchIntersection(point_1, v, firstIntersectFound, intersection_1, intersection_2, X, m_Width)) {
+				return true;
+			}
+			if (searchIntersection(point_1, v, firstIntersectFound, intersection_1, intersection_2, Z, 0)) {
+				return true;
+			}
+			if (searchIntersection(point_1, v, firstIntersectFound, intersection_1, intersection_2, Z, m_Depth)) {
+				return true;
+			}
+			return false;
+		}
+		else{
+			if (v.x == 0){
+				if (searchIntersection(point_1, v, firstIntersectFound, intersection_1, intersection_2, Z, 0)) {
+					return true;
+				}
+				if (searchIntersection(point_1, v, firstIntersectFound, intersection_1, intersection_2, Z, m_Depth)) {
+					return true;
+				}
+				return false;
+			}
+			if (v.z == 0){
+				if (searchIntersection(point_1, v, firstIntersectFound, intersection_1, intersection_2, X, 0)) {
+					return true;
+				}
+				if (searchIntersection(point_1, v, firstIntersectFound, intersection_1, intersection_2, X, m_Width)) {
+					return true;
+				}
+				return false;
+			}
+		}
+	}
+
+	//for Z
+	if (v.z == 0){
+		if (v.x != 0 && v.y != 0){
+			if (searchIntersection(point_1, v, firstIntersectFound, intersection_1, intersection_2, X, 0)) return true;
+			if (searchIntersection(point_1, v, firstIntersectFound, intersection_1, intersection_2, X, m_Width)) return true;
+			if (searchIntersection(point_1, v, firstIntersectFound, intersection_1, intersection_2, Y, 0)) return true;
+			if (searchIntersection(point_1, v, firstIntersectFound, intersection_1, intersection_2, Y, m_Height)) return true;
+			return false;
+		}
+		else{
+			if (v.y == 0){
+				if (searchIntersection(point_1, v, firstIntersectFound, intersection_1, intersection_2, X, 0)) return true;
+				if (searchIntersection(point_1, v, firstIntersectFound, intersection_1, intersection_2, X, m_Width)) return true;
+				return false;
+			}
+			if (v.x == 0){
+				if (searchIntersection(point_1, v, firstIntersectFound, intersection_1, intersection_2, Y, 0)) return true;
+				if (searchIntersection(point_1, v, firstIntersectFound, intersection_1, intersection_2, Y, m_Height)) return true;
+				return false;
+			}
+		}
+	}
+
+	//not parallel
+	if (searchIntersection(point_1, v, firstIntersectFound, intersection_1, intersection_2, X, 0)) {
+		return true;
+	}
+	if (searchIntersection(point_1, v, firstIntersectFound, intersection_1, intersection_2, X, m_Width)) {
+		return true;
+	}
+	if (searchIntersection(point_1, v, firstIntersectFound, intersection_1, intersection_2, Y, 0)) {
+		return true;
+	}
+	if (searchIntersection(point_1, v, firstIntersectFound, intersection_1, intersection_2, Y, m_Height)) {
+		return true;
+	}
+	if (searchIntersection(point_1, v, firstIntersectFound, intersection_1, intersection_2, Z, 0)) {
+		return true;
+	}
+	if (searchIntersection(point_1, v, firstIntersectFound, intersection_1, intersection_2, Z, m_Depth)) {
+		return true;
+	}
+	return false;
 }
 
-bool Volume::searchIntersection(vec3 point, vec3 v, bool& firstIntersectFound, vec3& intersec1, vec3& intersec2, Axis axis, float fixPoint) {
+bool Volume::searchIntersection(vec3 point, vec3 v, bool& firstIntersectFound, vec3& intersection_1, vec3& intersection_2, Axis axis, float fixPoint) {
+
+	vec3 temp;
+
+	if (axis == X){
+		float s = (fixPoint - point.x) / v.x;
+		temp.x = fixPoint;
+		temp.y = point.y + s * v.y;
+		temp.z = point.z + s * v.z;
+	}
+
+	if (axis == Y){
+		float s = (fixPoint - point.y) / v.y;
+		temp.x = point.x + s * v.x;
+		temp.y = fixPoint;
+		temp.z = point.z + s * v.z;
+	}
+
+	if (axis == Z){
+		float s = (fixPoint - point.z) / v.z;
+		temp.x = point.x + s * v.x;
+		temp.y = point.y + s * v.y;
+		temp.z = fixPoint;
+	}
+
+	if (isInsideBB(temp)){
+		if (!firstIntersectFound){
+			intersection_1 = temp;
+			firstIntersectFound = true;
+			return false;
+		}
+		else{
+			if (!(intersection_1.x == temp.x && intersection_1.y == temp.y && intersection_1.z == temp.z)){
+				intersection_2 = temp;
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+bool Volume::isInsideBB(vec3 point){
+	if (point.x < 0 || point.x > m_Width || point.y < 0 || point.y > m_Height || point.z < 0 || point.z > m_Depth) {
+		return false;
+	}
 	return true;
-	//TODO: implement
 }
 
 void Volume::initializePlane() {
