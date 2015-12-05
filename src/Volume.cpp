@@ -1,5 +1,7 @@
 #include "Volume.h"
-
+#include <glm.hpp>
+#include <gtx/string_cast.hpp>
+#include <gtc/matrix_transform.hpp>
 #include <math.h>
 
 static const int PIXEL_X = 640;
@@ -259,12 +261,12 @@ std::vector<float> Volume::getVolume()
 	//sample rate
 	float sample_step_size = 32.f;
 
-	//Vector3 start, end, intersection_1, intersection_2;
+	vec3 start, end, intersection_1, intersection_2;
 
 	for (int i = 0; i < PIXEL_Y; i++){
 		for (int j = 0; j < PIXEL_X; j++){
 
-			/*// start of ray
+			// start of ray
 			start.x = m_p.p4.x + (m_p.x.x * j) + (m_p.y.x * i);
 			start.y = m_p.p4.y + (m_p.x.y * j) + (m_p.y.y * i);
 			start.z = m_p.p4.z + (m_p.x.z * j) + (m_p.y.z * i);
@@ -275,7 +277,7 @@ std::vector<float> Volume::getVolume()
 			end.z = start.z + m_p.v.z;
 
 			//finds an intersection
-			bool isIntersect = isIntersection(start, end, m_p.v, intersection_1, intersection_2);*/
+			bool isIntersect = isIntersection(start, end, m_p.v, intersection_1, intersection_2);
 
 
 			out[i*PIXEL_X + j] = m_Voxels[i].getValue();
@@ -285,7 +287,7 @@ std::vector<float> Volume::getVolume()
 	return out;
 }
 
-/*bool Volume::isIntersection(Vector3 point_1, Vector3 point_2, Vector3 v, Vector3& intersection_1, Vector3& intersection_2) {
+bool Volume::isIntersection(vec3 point_1, vec3 point_2, vec3 v, vec3& intersection_1, vec3& intersection_2) {
 	//TODO: implement
 
 	//return false for those rays not in Bounding Box
@@ -351,7 +353,7 @@ std::vector<float> Volume::getVolume()
 	}
 }
 
-bool Volume::searchIntersection(Vector3 point, Vector3 v, bool& firstIntersectFound, Vector3& intersec1, Vector3& intersec2, Axis axis, float fixPoint) {
+bool Volume::searchIntersection(vec3 point, vec3 v, bool& firstIntersectFound, vec3& intersec1, vec3& intersec2, Axis axis, float fixPoint) {
 	return true;
 	//TODO: implement
 }
@@ -403,4 +405,4 @@ void Volume::initializePlane() {
 	m_p.y.y = m_p.y.y / PIXEL_Y;
 	m_p.y.z = m_p.y.z / PIXEL_Y;
 
-}*/
+}

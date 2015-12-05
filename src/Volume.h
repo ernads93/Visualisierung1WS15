@@ -56,19 +56,29 @@ class Voxel
 
 };
 
-/*class Plane
+//-------------------------------------------------------------------------------------------------
+// vec3
+//-------------------------------------------------------------------------------------------------
+
+struct vec3{
+	float x;
+	float y;
+	float z;
+};
+
+class Plane
 {
 public:
-	Vector3					p1;
-	Vector3					p2;
-	Vector3					p3;
-	Vector3					p4;
-	Vector3					middle;
-	Vector3					pivot;
-	Vector3					v;
-	Vector3					x;
-	Vector3					y;
-};*/
+	vec3					p1;
+	vec3					p2;
+	vec3					p3;
+	vec3					p4;
+	vec3					middle;
+	vec3					pivot;
+	vec3					v;
+	vec3					x;
+	vec3					y;
+};
 
 
 //-------------------------------------------------------------------------------------------------
@@ -95,19 +105,19 @@ class Volume
 		const int				depth() const;
 
 		const int				size() const;
-		//enum					Axis { X, Y, Z };
+		enum					Axis { X, Y, Z };
 
 		bool					loadFromFile(QString filename, QProgressBar* progressBar);
 		std::vector<float>		getVolume();
-		//bool					isIntersection(Vector3 point_1, Vector3 point_2, Vector3 v, Vector3& intersection_1, Vector3& intersection_2);
-		//bool					searchIntersection(Vector3 point, Vector3 v, bool& firstIntersectFound, Vector3& intersec1, Vector3& intersec2, Axis axis, float fixPoint);
-		//void					initializePlane();
+		bool					isIntersection(vec3 point_1, vec3 point_2, vec3 v, vec3& intersection_1, vec3& intersection_2);
+		bool					searchIntersection(vec3 point, vec3 v, bool& firstIntersectFound, vec3& intersec1, vec3& intersec2, Axis axis, float fixPoint);
+		void					initializePlane();
 
 
 	private:
 
 		std::vector<Voxel>		m_Voxels;
-		//Plane					m_p;
+		Plane					m_p;
 		int						m_Width;
 		int						m_Height;
 		int						m_Depth;
