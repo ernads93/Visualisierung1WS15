@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Vector.h"
+
 #include <vector>
 #include <string>
 #include <iostream>
@@ -54,6 +56,20 @@ class Voxel
 
 };
 
+/*class Plane
+{
+public:
+	Vector3					p1;
+	Vector3					p2;
+	Vector3					p3;
+	Vector3					p4;
+	Vector3					middle;
+	Vector3					pivot;
+	Vector3					v;
+	Vector3					x;
+	Vector3					y;
+};*/
+
 
 //-------------------------------------------------------------------------------------------------
 // Volume
@@ -79,15 +95,19 @@ class Volume
 		const int				depth() const;
 
 		const int				size() const;
+		//enum					Axis { X, Y, Z };
 
 		bool					loadFromFile(QString filename, QProgressBar* progressBar);
 		std::vector<float>		getVolume();
+		//bool					isIntersection(Vector3 point_1, Vector3 point_2, Vector3 v, Vector3& intersection_1, Vector3& intersection_2);
+		//bool					searchIntersection(Vector3 point, Vector3 v, bool& firstIntersectFound, Vector3& intersec1, Vector3& intersec2, Axis axis, float fixPoint);
+		//void					initializePlane();
 
 
 	private:
 
 		std::vector<Voxel>		m_Voxels;
-
+		//Plane					m_p;
 		int						m_Width;
 		int						m_Height;
 		int						m_Depth;

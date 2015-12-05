@@ -256,11 +256,151 @@ std::vector<float> Volume::getVolume()
 	std::vector<float> out;
 	out.resize(PIXEL_X * PIXEL_Y);
 
+	//sample rate
+	float sample_step_size = 32.f;
+
+	//Vector3 start, end, intersection_1, intersection_2;
+
 	for (int i = 0; i < PIXEL_Y; i++){
 		for (int j = 0; j < PIXEL_X; j++){
+
+			/*// start of ray
+			start.x = m_p.p4.x + (m_p.x.x * j) + (m_p.y.x * i);
+			start.y = m_p.p4.y + (m_p.x.y * j) + (m_p.y.y * i);
+			start.z = m_p.p4.z + (m_p.x.z * j) + (m_p.y.z * i);
+
+			//end of ray
+			end.x = start.x + m_p.v.x;
+			end.y = start.y + m_p.v.y;
+			end.z = start.z + m_p.v.z;
+
+			//finds an intersection
+			bool isIntersect = isIntersection(start, end, m_p.v, intersection_1, intersection_2);*/
+
+
 			out[i*PIXEL_X + j] = m_Voxels[i].getValue();
 		}
 	}
 
 	return out;
 }
+
+/*bool Volume::isIntersection(Vector3 point_1, Vector3 point_2, Vector3 v, Vector3& intersection_1, Vector3& intersection_2) {
+	//TODO: implement
+
+	//return false for those rays not in Bounding Box
+	if (point_1.x < 0 && point_2.x < 0) {
+		return false;
+	}
+	if (point_1.x > m_Width && point_2.x > m_Width) {
+		return false;
+	}
+	if (point_1.y < 0 && point_2.y < 0)  {
+		return false;
+	}
+	if (point_1.y > m_Height && point_2.y > m_Height) {
+		return false;
+	}
+	if (point_1.z < 0 && point_2.z < 0) {
+		return false;
+	}
+	if (point_1.z > m_Depth && point_2.z > m_Depth) {
+		return false;
+	}
+
+	bool firstIntersectFound = false;
+	Vector3 temp;
+
+	// check if parralel
+	if (v.x == 0){
+		if (v.y != 0 && v.z != 0){
+			if (searchIntersection(point_1, v, firstIntersectFound, intersection_1, intersection_2, Y, 0)) {
+				return true;
+			}
+			if (searchIntersection(point_1, v, firstIntersectFound, intersection_1, intersection_2, Y, m_Height)) {
+				return true;
+			}
+			if (searchIntersection(point_1, v, firstIntersectFound, intersection_1, intersection_2, Z, 0)) {
+				return true;
+			}
+			if (searchIntersection(point_1, v, firstIntersectFound, intersection_1, intersection_2, Z, m_Depth)) {
+				return true;
+			}
+			return false;
+		}
+		else{
+			if (v.y == 0){
+				if (searchIntersection(point_1, v, firstIntersectFound, intersection_1, intersection_2, Z, 0)) {
+					return true;
+				}
+				if (searchIntersection(point_1, v, firstIntersectFound, intersection_1, intersection_2, Z, m_Depth)) {
+					return true;
+				}
+				return false;
+			}
+			if (v.z == 0){
+				if (searchIntersection(point_1, v, firstIntersectFound, intersection_1, intersection_2, Y, 0)) {
+					return true;
+				}
+				if (searchIntersection(point_1, v, firstIntersectFound, intersection_1, intersection_2, Y, m_Height)) {
+					return true;
+				}
+				return false;
+			}
+		}
+	}
+}
+
+bool Volume::searchIntersection(Vector3 point, Vector3 v, bool& firstIntersectFound, Vector3& intersec1, Vector3& intersec2, Axis axis, float fixPoint) {
+	return true;
+	//TODO: implement
+}
+
+void Volume::initializePlane() {
+
+	m_p.pivot.x = m_Width / 2;
+	m_p.pivot.y = m_Height / 2;
+	m_p.pivot.z = m_Depth / 2;
+
+	m_p.p1.x = m_p.pivot.x - PIXEL_X / 2;
+	m_p.p1.y = m_p.pivot.y - PIXEL_Y / 2;
+	m_p.p1.z = -1000;
+
+	m_p.p2.x = m_p.pivot.x + PIXEL_X / 2;
+	m_p.p2.y = m_p.pivot.y - PIXEL_Y / 2;
+	m_p.p2.z = -1000;
+
+	m_p.p3.x = m_p.pivot.x + PIXEL_X / 2;
+	m_p.p3.y = m_p.pivot.y + PIXEL_Y / 2;
+	m_p.p3.z = -1000;
+
+	m_p.p4.x = m_p.pivot.x - PIXEL_X / 2;
+	m_p.p4.y = m_p.pivot.y + PIXEL_Y / 2;
+	m_p.p4.z = -1000;
+
+	m_p.middle.x = m_p.pivot.x;
+	m_p.middle.y = m_p.pivot.y;
+	m_p.middle.z = -1000;
+
+	m_p.v.x = 0;
+	m_p.v.y = 0;
+	m_p.v.z = -m_p.middle.z + std::max(m_Width, std::max(m_Height, m_Depth));
+
+	m_p.x.x = m_p.p3.x - m_p.p4.x;
+	m_p.x.y = m_p.p3.y - m_p.p4.y;
+	m_p.x.z = m_p.p3.z - m_p.p4.z;
+
+	m_p.y.x = m_p.p1.x - m_p.p4.x;
+	m_p.y.y = m_p.p1.y - m_p.p4.y;
+	m_p.y.z = m_p.p1.z - m_p.p4.z;
+
+	//normalize
+	m_p.x.x = m_p.x.x / PIXEL_X;
+	m_p.x.y = m_p.x.y / PIXEL_X;
+	m_p.x.z = m_p.x.z / PIXEL_X;
+
+	m_p.y.x = m_p.y.x / PIXEL_Y;
+	m_p.y.y = m_p.y.y / PIXEL_Y;
+	m_p.y.z = m_p.y.z / PIXEL_Y;
+
+}*/
