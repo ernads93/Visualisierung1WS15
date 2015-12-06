@@ -124,6 +124,5 @@ class Volume
 		int						m_Depth;
 
 		int						m_Size;
-		bool					start = true;
 
 };

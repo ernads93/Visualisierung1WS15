@@ -101,7 +101,11 @@ void MyGLWidget::paintGL()
 	if (success)
 	{
 		std::vector<float> pixels = volume->rayCasting();
-		glDrawPixels(640, 480, GL_LUMINANCE, GL_FLOAT, &pixels[0]);
+
+		int width = volume->width();
+		int height = volume->height();
+
+		glDrawPixels(width, height, GL_LUMINANCE, GL_FLOAT, &pixels[0]);
 		shader.release();
 	}
 }

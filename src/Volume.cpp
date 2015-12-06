@@ -4,9 +4,6 @@
 #include <gtc/matrix_transform.hpp>
 #include <math.h>
 
-static const int PIXEL_X = 640;
-static const int PIXEL_Y = 480;
-
 //-------------------------------------------------------------------------------------------------
 // Voxel
 //-------------------------------------------------------------------------------------------------
@@ -252,19 +249,20 @@ bool Volume::loadFromFile(QString filename, QProgressBar* progressBar)
 	return true;
 }
 
+
 std::vector<float> Volume::rayCasting()
 {
 
 	std::vector<float> out;
-	out.resize(PIXEL_X * PIXEL_Y);
+	out.resize(m_Width * m_Height);
 
 	//sample rate
 	float sample_step_size = 32.f;
 
 	vec3 start, end, intersection_1, intersection_2;
 
-	for (int i = 0; i < PIXEL_Y; i++){
-		for (int j = 0; j < PIXEL_X; j++){
+	for (int i = 0; i < m_Height; i++){
+		for (int j = 0; j < m_Width; j++){
 
 			// start of ray
 			start.x = m_p.p4.x + (m_p.x.x * j) + (m_p.y.x * i);
@@ -301,7 +299,7 @@ std::vector<float> Volume::rayCasting()
 					front = front + direction;
 				}
 			}
-			out[i*PIXEL_X + j] = maxIntensity;
+			out[i*m_Width + j] = maxIntensity;
 		}
 	}
 	return out;
@@ -511,20 +509,20 @@ void Volume::initializePlane() {
 	m_p.pivot.y = m_Height / 2;
 	m_p.pivot.z = m_Depth / 2;
 
-	m_p.p1.x = m_p.pivot.x - PIXEL_X / 2;
-	m_p.p1.y = m_p.pivot.y - PIXEL_Y / 2;
+	m_p.p1.x = m_p.pivot.x - m_Width / 2;
+	m_p.p1.y = m_p.pivot.y - m_Height / 2;
 	m_p.p1.z = -1000;
 
-	m_p.p2.x = m_p.pivot.x + PIXEL_X / 2;
-	m_p.p2.y = m_p.pivot.y - PIXEL_Y / 2;
+	m_p.p2.x = m_p.pivot.x + m_Width / 2;
+	m_p.p2.y = m_p.pivot.y - m_Height / 2;
 	m_p.p2.z = -1000;
 
-	m_p.p3.x = m_p.pivot.x + PIXEL_X / 2;
-	m_p.p3.y = m_p.pivot.y + PIXEL_Y / 2;
+	m_p.p3.x = m_p.pivot.x + m_Width / 2;
+	m_p.p3.y = m_p.pivot.y + m_Height / 2;
 	m_p.p3.z = -1000;
 
-	m_p.p4.x = m_p.pivot.x - PIXEL_X / 2;
-	m_p.p4.y = m_p.pivot.y + PIXEL_Y / 2;
+	m_p.p4.x = m_p.pivot.x - m_Width / 2;
+	m_p.p4.y = m_p.pivot.y + m_Height / 2;
 	m_p.p4.z = -1000;
 
 	m_p.middle.x = m_p.pivot.x;
@@ -544,12 +542,12 @@ void Volume::initializePlane() {
 	m_p.y.z = m_p.p1.z - m_p.p4.z;
 
 	//normalize
-	m_p.x.x = m_p.x.x / PIXEL_X;
-	m_p.x.y = m_p.x.y / PIXEL_X;
-	m_p.x.z = m_p.x.z / PIXEL_X;
+	m_p.x.x = m_p.x.x / m_Width;
+	m_p.x.y = m_p.x.y / m_Width;
+	m_p.x.z = m_p.x.z / m_Width;
 
-	m_p.y.x = m_p.y.x / PIXEL_Y;
-	m_p.y.y = m_p.y.y / PIXEL_Y;
-	m_p.y.z = m_p.y.z / PIXEL_Y;
+	m_p.y.x = m_p.y.x / m_Height;
+	m_p.y.y = m_p.y.y / m_Height;
+	m_p.y.z = m_p.y.z / m_Height;
 
 }
