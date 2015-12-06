@@ -118,7 +118,7 @@ class Volume
 	private:
 
 		std::vector<Voxel>		m_Voxels;
-		Plane					m_p;
+		Plane					m_Plane;
 		int						m_Width;
 		int						m_Height;
 		int						m_Depth;

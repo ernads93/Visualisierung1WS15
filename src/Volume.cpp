@@ -261,21 +261,21 @@ std::vector<float> Volume::rayCasting()
 
 	vec3 start, end, intersection_1, intersection_2;
 
-	for (int i = 0; i < m_Height; i++){
-		for (int j = 0; j < m_Width; j++){
-
+	for (int i = 0; i < m_Width; i++){
+		for (int j = 0; j < m_Height; j++){
+			
 			// start of ray
-			start.x = m_p.p4.x + (m_p.x.x * j) + (m_p.y.x * i);
-			start.y = m_p.p4.y + (m_p.x.y * j) + (m_p.y.y * i);
-			start.z = m_p.p4.z + (m_p.x.z * j) + (m_p.y.z * i);
+			start.x =			(m_Plane.x.x * j) + (m_Plane.y.x * i);
+			start.y = m_Width + (m_Plane.x.y * j) + (m_Plane.y.y * i);
+			start.z = m_Depth + (m_Plane.x.z * j) + (m_Plane.y.z * i);
 
 			//end of ray
-			end.x = start.x + m_p.v.x;
-			end.y = start.y + m_p.v.y;
-			end.z = start.z + m_p.v.z;
+			end.x = start.x;
+			end.y = start.y;
+			end.z = start.z + m_Depth;
 
 			//finds an intersection
-			bool isIntersect = isIntersection(start, end, m_p.v, intersection_1, intersection_2);
+			bool isIntersect = isIntersection(start, end, m_Plane.v, intersection_1, intersection_2);
 
 			float maxIntensity = 0.f;
 
@@ -299,7 +299,7 @@ std::vector<float> Volume::rayCasting()
 					front = front + direction;
 				}
 			}
-			out[i*m_Width + j] = maxIntensity;
+			out[j*m_Width + i] = maxIntensity;
 		}
 	}
 	return out;
@@ -505,49 +505,51 @@ bool Volume::isInsideBB(vec3 point){
 
 void Volume::initializePlane() {
 
-	m_p.pivot.x = m_Width / 2;
-	m_p.pivot.y = m_Height / 2;
-	m_p.pivot.z = m_Depth / 2;
+	m_Plane.pivot.x = m_Width / 2;
+	m_Plane.pivot.y = m_Height / 2;
+	m_Plane.pivot.z = m_Depth / 2;
 
-	m_p.p1.x = m_p.pivot.x - m_Width / 2;
-	m_p.p1.y = m_p.pivot.y - m_Height / 2;
-	m_p.p1.z = -1000;
+	m_Plane.p1.x = m_Plane.pivot.x - m_Width / 2;
+	m_Plane.p1.y = m_Plane.pivot.y - m_Height / 2;
+	m_Plane.p1.z = -1000;
 
-	m_p.p2.x = m_p.pivot.x + m_Width / 2;
-	m_p.p2.y = m_p.pivot.y - m_Height / 2;
-	m_p.p2.z = -1000;
+	m_Plane.p2.x = m_Plane.pivot.x + m_Width / 2;
+	m_Plane.p2.y = m_Plane.pivot.y - m_Height / 2;
+	m_Plane.p2.z = -1000;
 
-	m_p.p3.x = m_p.pivot.x + m_Width / 2;
-	m_p.p3.y = m_p.pivot.y + m_Height / 2;
-	m_p.p3.z = -1000;
+	m_Plane.p3.x = m_Plane.pivot.x + m_Width / 2;
+	m_Plane.p3.y = m_Plane.pivot.y + m_Height / 2;
+	m_Plane.p3.z = -1000;
 
-	m_p.p4.x = m_p.pivot.x - m_Width / 2;
-	m_p.p4.y = m_p.pivot.y + m_Height / 2;
-	m_p.p4.z = -1000;
+	m_Plane.p4.x = m_Plane.pivot.x - m_Width / 2;
+	m_Plane.p4.y = m_Plane.pivot.y + m_Height / 2;
+	m_Plane.p4.z = -1000;
 
-	m_p.middle.x = m_p.pivot.x;
-	m_p.middle.y = m_p.pivot.y;
-	m_p.middle.z = -1000;
+	m_Plane.middle.x = m_Plane.pivot.x;
+	m_Plane.middle.y = m_Plane.pivot.y;
+	m_Plane.middle.z = -1000;
 
-	m_p.v.x = 0;
-	m_p.v.y = 0;
-	m_p.v.z = -m_p.middle.z + std::max(m_Width, std::max(m_Height, m_Depth));
+	m_Plane.v.x = 0;
+	m_Plane.v.y = 0;
+	m_Plane.v.z = -m_Plane.middle.z + std::max(m_Width, std::max(m_Height, m_Depth));
 
-	m_p.x.x = m_p.p3.x - m_p.p4.x;
-	m_p.x.y = m_p.p3.y - m_p.p4.y;
-	m_p.x.z = m_p.p3.z - m_p.p4.z;
+	std::cout << "v: " << m_Plane.v.z << std::endl;
 
-	m_p.y.x = m_p.p1.x - m_p.p4.x;
-	m_p.y.y = m_p.p1.y - m_p.p4.y;
-	m_p.y.z = m_p.p1.z - m_p.p4.z;
+	m_Plane.x.x = m_Plane.p3.x - m_Plane.p4.x;
+	m_Plane.x.y = m_Plane.p3.y - m_Plane.p4.y;
+	m_Plane.x.z = m_Plane.p3.z - m_Plane.p4.z;
+
+	m_Plane.y.x = m_Plane.p1.x - m_Plane.p4.x;
+	m_Plane.y.y = m_Plane.p1.y - m_Plane.p4.y;
+	m_Plane.y.z = m_Plane.p1.z - m_Plane.p4.z;
 
 	//normalize
-	m_p.x.x = m_p.x.x / m_Width;
-	m_p.x.y = m_p.x.y / m_Width;
-	m_p.x.z = m_p.x.z / m_Width;
+	m_Plane.x.x = m_Plane.x.x / m_Width;
+	m_Plane.x.y = m_Plane.x.y / m_Width;
+	m_Plane.x.z = m_Plane.x.z / m_Width;
 
-	m_p.y.x = m_p.y.x / m_Height;
-	m_p.y.y = m_p.y.y / m_Height;
-	m_p.y.z = m_p.y.z / m_Height;
+	m_Plane.y.x = m_Plane.y.x / m_Height;
+	m_Plane.y.y = m_Plane.y.y / m_Height;
+	m_Plane.y.z = m_Plane.y.z / m_Height;
 
 }

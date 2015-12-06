@@ -68,7 +68,7 @@ void MyGLWidget::setZRotation(int angle)
 
 void MyGLWidget::initializeGL()
 {
-	qglClearColor(Qt::white);
+	qglClearColor(Qt::black);
 
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
@@ -100,11 +100,16 @@ void MyGLWidget::paintGL()
 
 	if (success)
 	{
+		std::cout << "MyGLWidget start raycasting" << std::endl;
+		
 		std::vector<float> pixels = volume->rayCasting();
+		
+		std::cout << "MyGLWidget end raycasting" << std::endl;
 
 		int width = volume->width();
 		int height = volume->height();
 
+		//glPixelZoom(640 / width, 480 / height);
 		glDrawPixels(width, height, GL_LUMINANCE, GL_FLOAT, &pixels[0]);
 		shader.release();
 	}
