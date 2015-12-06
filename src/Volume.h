@@ -108,7 +108,7 @@ class Volume
 		enum					Axis { X, Y, Z };
 
 		bool					loadFromFile(QString filename, QProgressBar* progressBar);
-		std::vector<float>		getVolume();
+		std::vector<float>		rayCasting();
 		bool					isIntersection(vec3 point_1, vec3 point_2, vec3 v, vec3& intersection_1, vec3& intersection_2);
 		bool					searchIntersection(vec3 point, vec3 v, bool& firstIntersectFound, vec3& intersection_1, vec3& intersection_2, Axis axis, float fixPoint);
 		bool					isInsideBB(vec3 point);
@@ -124,5 +124,6 @@ class Volume
 		int						m_Depth;
 
 		int						m_Size;
+		bool					start = true;
 
 };

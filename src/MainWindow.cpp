@@ -57,8 +57,10 @@ void MainWindow::openFileAction()
 			success = m_Volume->loadFromFile(filename, m_Ui->progressBar);
 
 			if (success) {
+				m_Volume->initializePlane();
 				m_Ui->myGLWidget->setVolume(m_Volume);
 			}
+
 		}
 		else if (fn.substr(fn.find_last_of(".") + 1) == "gri")		// LOAD VECTORFIELD
 		{

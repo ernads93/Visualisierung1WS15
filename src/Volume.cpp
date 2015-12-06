@@ -232,7 +232,6 @@ bool Volume::loadFromFile(QString filename, QProgressBar* progressBar)
 
 	progressBar->setValue(10);
 
-
 	// store volume data
 
 	for (int i = 0; i < m_Size; i++)
@@ -240,7 +239,7 @@ bool Volume::loadFromFile(QString filename, QProgressBar* progressBar)
 		// data is converted to FLOAT values in an interval of [0.0 .. 1.0];
 		// uses 4095.0f to normalize the data, because only 12bit are used for the
 		// data values, and then 4095.0f is the maximum possible value
-		const float value = std::fmin(0.0f, float(vecData[i]) / 4095.0f);
+		const float value = std::fmax(0.0f, std::fmin(1.0f, (float(vecData[i]) / 4095.0f)));
 		m_Voxels[i] = Voxel(value);
 		
 		progressBar->setValue(10 + i);
@@ -253,8 +252,9 @@ bool Volume::loadFromFile(QString filename, QProgressBar* progressBar)
 	return true;
 }
 
-std::vector<float> Volume::getVolume()
+std::vector<float> Volume::rayCasting()
 {
+
 	std::vector<float> out;
 	out.resize(PIXEL_X * PIXEL_Y);
 
@@ -301,7 +301,7 @@ std::vector<float> Volume::getVolume()
 					front = front + direction;
 				}
 			}
-			out[i*PIXEL_X + j] = m_Voxels[i].getValue();
+			out[i*PIXEL_X + j] = maxIntensity;
 		}
 	}
 	return out;

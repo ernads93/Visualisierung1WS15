@@ -36,9 +36,9 @@ public:
 protected:
 	void initializeGL();
 	void paintGL();
-	void resizeGL(int width, int height);
+	//void resizeGL(int width, int height);
 
-	QSize minimumSizeHint() const;
+	//QSize minimumSizeHint() const;
 	QSize sizeHint() const;
 	void mousePressEvent(QMouseEvent *event);
 	void mouseMoveEvent(QMouseEvent *event);
@@ -57,13 +57,12 @@ signals:
 
 private:
 
-	void draw();
-
 	int xRot;
 	int yRot;
 	int zRot;
 
 	QPoint lastPos;
+	QGLShaderProgram shader;
 
 };
 #endif

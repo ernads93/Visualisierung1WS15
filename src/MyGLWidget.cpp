@@ -17,14 +17,14 @@ MyGLWidget::~MyGLWidget()
 {
 
 }
-QSize MyGLWidget::minimumSizeHint() const
+/*QSize MyGLWidget::minimumSizeHint() const
 {
 	return QSize(50, 50);
-}
+}*/
 
 QSize MyGLWidget::sizeHint() const
 {
-	return QSize(400, 400);
+	return QSize(640, 480);
 }
 
 static void qNormalizeAngle(int &angle)
@@ -78,6 +78,15 @@ void MyGLWidget::initializeGL()
 
 	static GLfloat lightPosition[4] = { 0, 0, 10, 1.0 };
 	glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
+
+	shader.addShaderFromSourceFile(QGLShader::Vertex, "shader/simple.vert");
+	shader.addShaderFromSourceFile(QGLShader::Fragment, "shader/simple.frag");
+
+	shader.link();
+	if (!shader.bind()){
+		qWarning() << "Couldnt bind shader program";
+		return;
+	}
 }
 
 void MyGLWidget::paintGL()
@@ -91,11 +100,13 @@ void MyGLWidget::paintGL()
 
 	if (success)
 	{
-		draw();
+		std::vector<float> pixels = volume->rayCasting();
+		glDrawPixels(640, 480, GL_LUMINANCE, GL_FLOAT, &pixels[0]);
+		shader.release();
 	}
 }
 
-void MyGLWidget::resizeGL(int width, int height)
+/*void MyGLWidget::resizeGL(int width, int height)
 {
 	int side = qMin(width, height);
 	glViewport((width - side) / 2, (height - side) / 2, side, side);
@@ -108,7 +119,7 @@ void MyGLWidget::resizeGL(int width, int height)
 	glOrtho(-2, +2, -2, +2, 1.0, 15.0);
 #endif
 	glMatrixMode(GL_MODELVIEW);
-}
+}*/
 
 void MyGLWidget::mousePressEvent(QMouseEvent *event)
 {
@@ -130,43 +141,6 @@ void MyGLWidget::mouseMoveEvent(QMouseEvent *event)
 	}
 
 	lastPos = event->pos();
-}
-
-void MyGLWidget::draw()
-{
-	qglColor(Qt::red);
-	glBegin(GL_QUADS);
-	glNormal3f(0, 0, -1);
-	glVertex3f(-1, -1, 0);
-	glVertex3f(-1, 1, 0);
-	glVertex3f(1, 1, 0);
-	glVertex3f(1, -1, 0);
-
-	glEnd();
-	glBegin(GL_TRIANGLES);
-	glNormal3f(0, -1, 0.707);
-	glVertex3f(-1, -1, 0);
-	glVertex3f(1, -1, 0);
-	glVertex3f(0, 0, 1.2);
-	glEnd();
-	glBegin(GL_TRIANGLES);
-	glNormal3f(1, 0, 0.707);
-	glVertex3f(1, -1, 0);
-	glVertex3f(1, 1, 0);
-	glVertex3f(0, 0, 1.2);
-	glEnd();
-	glBegin(GL_TRIANGLES);
-	glNormal3f(0, 1, 0.707);
-	glVertex3f(1, 1, 0);
-	glVertex3f(-1, 1, 0);
-	glVertex3f(0, 0, 1.2);
-	glEnd();
-	glBegin(GL_TRIANGLES);
-	glNormal3f(-1, 0, 0.707);
-	glVertex3f(-1, 1, 0);
-	glVertex3f(-1, -1, 0);
-	glVertex3f(0, 0, 1.2);
-	glEnd();
 }
 
 void MyGLWidget::setVolume(Volume* v)
