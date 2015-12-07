@@ -256,45 +256,20 @@ std::vector<float> Volume::rayCasting()
 	std::vector<float> out;
 	out.resize(m_Width * m_Height);
 
-	//sample rate
-	float samples = 32.f;
-
-	glm::vec3 start, end; // , intersection_1, intersection_2;
-
 	for (int i = 0; i < m_Width; i++)
 	{
 		for (int j = 0; j < m_Height; j++)
 		{
-			// start of ray
-			glm::vec3 start(i, j, 0);
+			Voxel& maxIntesity = Voxel();
+			for (int z = 0; z < m_Depth; z++)
+			{
 
-			//end of ray
-			glm::vec3 end(i, j, m_Depth);
-
-			// direction of ray
-			glm::vec3 direction = (end - start);
-
-			// sample Step
-			glm::vec3 sampleStep = glm::vec3(direction.x * samples / direction.z, direction.y * samples / direction.z, samples);
-
-			// maximum intensity
-			float maxIntensity = 0.f;
-
-			// Maximum-Intensity-Projektion
-			while (start.z < end.z){
-
-				// intensity of sample voxel
-				float intensity = m_Voxels[round(start.x) + m_Width * (round(start.y) + m_Depth * round(start.z))].getValue();
-				
-				if (intensity > maxIntensity)
+				if (this->voxel(i, j, z).operator>(maxIntesity))
 				{
-					maxIntensity = intensity;
+					maxIntesity = this->voxel(i, j, z);
 				}
-				// next sample
-				start = start + sampleStep;
 			}
-
-			out[j*m_Width + i] = maxIntensity;
+			out[j*m_Width + i] = maxIntesity.getValue();
 		}
 	}
 	return out;

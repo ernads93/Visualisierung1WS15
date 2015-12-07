@@ -109,7 +109,6 @@ void MyGLWidget::paintGL()
 		int width = volume->width();
 		int height = volume->height();
 
-		//glPixelZoom(640 / width, 480 / height);
 		glDrawPixels(width, height, GL_LUMINANCE, GL_FLOAT, &pixels[0]);
 		shader.release();
 	}
