@@ -300,7 +300,7 @@ std::vector<float> Volume::rayCasting()
 				// Alpha-Compositing
 				else
 				{
-					alpha += this->voxel(x, y, z).getValue() * ((1.0 - alpha) * m_transparency);
+					alpha += this->voxel(x, y, z).getValue() * ((1.0 - z / m_Depth) * m_transparency);
 					
 					if (alpha > 1.0) {
 						alpha = 1.0;
