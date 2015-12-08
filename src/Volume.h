@@ -95,6 +95,7 @@ class Volume
 
 		int						m_Size;
 		int						m_samples;
+		float				    m_transparency;
 
 		bool					mip = true;
 		bool					firstHit = false;

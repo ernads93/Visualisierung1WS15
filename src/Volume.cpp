@@ -220,6 +220,8 @@ bool Volume::loadFromFile(QString filename, QProgressBar* progressBar)
 
 	// set sample steps
 	m_samples = round(m_Depth / 5);
+	//set alpha opacitie
+	m_transparency = 0.2;
 
 
 	// read volume data
@@ -298,7 +300,7 @@ std::vector<float> Volume::rayCasting()
 				// Alpha-Compositing
 				else
 				{
-					alpha += this->voxel(x, y, z).getValue() * ((1.0 - z / m_Depth) * 0.1);
+					alpha += this->voxel(x, y, z).getValue() * ((1.0 - alpha) * m_transparency);
 					
 					if (alpha > 1.0) {
 						alpha = 1.0;
