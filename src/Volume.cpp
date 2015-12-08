@@ -256,21 +256,69 @@ std::vector<float> Volume::rayCasting()
 	std::vector<float> out;
 	out.resize(m_Width * m_Height);
 
-	for (int i = 0; i < m_Width; i++)
-	{
-		for (int j = 0; j < m_Height; j++)
-		{
-			Voxel& maxIntesity = Voxel();
-			for (int z = 0; z < m_Depth; z++)
-			{
+	//sample rate
+	float samples = 1.f;
 
-				if (this->voxel(i, j, z).operator>(maxIntesity))
+	for (int x = 0; x < m_Width; x++)
+	{
+		for (int y = 0; y < m_Height; y++)
+		{
+			// start/end of ray
+			glm::vec3 start(x, y, 0);
+			glm::vec3 end(x, y, m_Depth);
+			
+
+			// Maximum-Intensity-Projektion
+			if (mip)
+			{
+				// maximum intensity
+				Voxel& maxIntesity = Voxel();
+
+				for (int z = 0; z < m_Depth; z += samples)
 				{
-					maxIntesity = this->voxel(i, j, z);
+
+					if (this->voxel(x, y, z).operator>(maxIntesity))
+					{
+						maxIntesity = this->voxel(x, y, z);
+					}
 				}
+
+				out[y*m_Width + x] = maxIntesity.getValue();
 			}
-			out[j*m_Width + i] = maxIntesity.getValue();
+
+
+			// First-Hit Renderingtechnik
+			else
+			{
+				// first hit
+				Voxel& first = Voxel();
+
+				for (int z = 0; z < m_Depth; z += samples)
+				{
+
+					if (this->voxel(x, y, z).getValue() > 0.f)
+					{
+						first = this->voxel(x, y, z);
+						break;
+					}
+				}
+
+				out[y*m_Width + x] = first.getValue();
+			}
+			
 		}
 	}
 	return out;
+}
+
+void Volume::setMip()
+{
+	mip = true;
+	firstHit = false;
+}
+
+void Volume::setFirstHit()
+{
+	firstHit = true;
+	mip = false;
 }

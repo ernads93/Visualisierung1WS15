@@ -13,6 +13,9 @@ MainWindow::MainWindow(QWidget *parent)
 
 	connect(m_Ui->actionOpen, SIGNAL(triggered()), this, SLOT(openFileAction()));
 	connect(m_Ui->actionClose, SIGNAL(triggered()), this, SLOT(closeAction()));
+	connect(m_Ui->radioFH, SIGNAL(clicked()), this, SLOT(chooseRenderingTechnique()));
+	connect(m_Ui->radioMIP, SIGNAL(clicked()), this, SLOT(chooseRenderingTechnique()));
+	connect(m_Ui->renderButton, SIGNAL(clicked()), this, SLOT(startRendering()));
 
 	/*connect(m_Ui->xRotSlider, SIGNAL(valueChanged(int)), m_Ui->myGLWidget, SLOT(setXRotation(int)));
 	connect(m_Ui->yRotSlider, SIGNAL(valueChanged(int)), m_Ui->myGLWidget, SLOT(setYRotation(int)));
@@ -57,6 +60,7 @@ void MainWindow::openFileAction()
 			success = m_Volume->loadFromFile(filename, m_Ui->progressBar);
 
 			if (success) {
+				//m_Volume->setFirstHit();
 				m_Ui->myGLWidget->setVolume(m_Volume);
 			}
 
@@ -103,4 +107,24 @@ void MainWindow::openFileAction()
 void MainWindow::closeAction()
 {
 	close();
+}
+
+void MainWindow::chooseRenderingTechnique()
+{
+	if (m_Ui->radioMIP->isChecked())
+	{
+		std::cout << "set rendering technique MIP" << std::endl;
+		m_Volume->setMip();
+	}
+
+	if (m_Ui->radioFH->isChecked())
+	{
+		std::cout << "set rendering technique first hit" << std::endl;
+		m_Volume->setFirstHit();
+	}
+}
+
+void MainWindow::startRendering()
+{
+	m_Ui->myGLWidget->startRendering();
 }

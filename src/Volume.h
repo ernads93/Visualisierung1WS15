@@ -85,6 +85,9 @@ class Volume
 		bool					loadFromFile(QString filename, QProgressBar* progressBar);
 		std::vector<float>		rayCasting();
 
+		void					setMip();
+		void					setFirstHit();
+
 
 	private:
 
@@ -94,5 +97,8 @@ class Volume
 		int						m_Depth;
 
 		int						m_Size;
+
+		bool					mip = true;
+		bool					firstHit = false;
 
 };

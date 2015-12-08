@@ -27,8 +27,10 @@ class MainWindow : public QMainWindow
 	
 	protected slots :
 
-		void								 openFileAction();
-		void								 closeAction();
+		void			openFileAction();
+		void			closeAction();
+		void			chooseRenderingTechnique();
+		void			startRendering();
 		
 
 	private:
