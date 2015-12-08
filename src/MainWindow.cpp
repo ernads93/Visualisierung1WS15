@@ -16,6 +16,7 @@ MainWindow::MainWindow(QWidget *parent)
 	connect(m_Ui->radioFH, SIGNAL(clicked()), this, SLOT(chooseRenderingTechnique()));
 	connect(m_Ui->radioMIP, SIGNAL(clicked()), this, SLOT(chooseRenderingTechnique()));
 	connect(m_Ui->renderButton, SIGNAL(clicked()), this, SLOT(startRendering()));
+	connect(m_Ui->sampleSlider, SIGNAL(valueChanged(int)), this, SLOT(setSampleDistance(int)));
 
 	/*connect(m_Ui->xRotSlider, SIGNAL(valueChanged(int)), m_Ui->myGLWidget, SLOT(setXRotation(int)));
 	connect(m_Ui->yRotSlider, SIGNAL(valueChanged(int)), m_Ui->myGLWidget, SLOT(setYRotation(int)));
@@ -122,6 +123,12 @@ void MainWindow::chooseRenderingTechnique()
 		std::cout << "set rendering technique first hit" << std::endl;
 		m_Volume->setFirstHit();
 	}
+}
+
+void MainWindow::setSampleDistance(int distance)
+{
+	std::cout << "set sample distance: " << distance << std::endl;
+	m_Volume->setSampleDistance(distance);
 }
 
 void MainWindow::startRendering()

@@ -23,12 +23,10 @@ class Voxel
 
 		~Voxel();
 
-
 		// VOXEL VALUE
 
 		void					setValue(const float value);
 		const float				getValue() const;
-
 
 		// OPERATORS
 
@@ -49,7 +47,6 @@ class Voxel
 		const Voxel&			operator*=(const float &value);
 		const Voxel&			operator/=(const float &value);
 
-
 	private:
 
 		float					m_Value;
@@ -69,7 +66,6 @@ class Volume
 		Volume();
 		~Volume();
 
-
 		// VOLUME DATA
 
 		const Voxel&			voxel(const int i) const;
@@ -85,9 +81,9 @@ class Volume
 		bool					loadFromFile(QString filename, QProgressBar* progressBar);
 		std::vector<float>		rayCasting();
 
+		void					setSampleDistance(int distance);
 		void					setMip();
 		void					setFirstHit();
-
 
 	private:
 
@@ -97,6 +93,7 @@ class Volume
 		int						m_Depth;
 
 		int						m_Size;
+		int						m_samples;
 
 		bool					mip = true;
 		bool					firstHit = false;

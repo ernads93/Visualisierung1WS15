@@ -30,6 +30,7 @@ class MainWindow : public QMainWindow
 		void			openFileAction();
 		void			closeAction();
 		void			chooseRenderingTechnique();
+		void			setSampleDistance(int distance);
 		void			startRendering();
 		
 

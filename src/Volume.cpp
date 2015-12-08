@@ -218,6 +218,9 @@ bool Volume::loadFromFile(QString filename, QProgressBar* progressBar)
 	int test = INT_MAX;
 	m_Voxels.resize(m_Size);
 
+	// set sample steps
+	m_samples = round(m_Depth / 5);
+
 
 	// read volume data
 
@@ -256,9 +259,6 @@ std::vector<float> Volume::rayCasting()
 	std::vector<float> out;
 	out.resize(m_Width * m_Height);
 
-	//sample rate
-	float samples = 1.f;
-
 	for (int x = 0; x < m_Width; x++)
 	{
 		for (int y = 0; y < m_Height; y++)
@@ -268,47 +268,41 @@ std::vector<float> Volume::rayCasting()
 			glm::vec3 end(x, y, m_Depth);
 			
 
-			// Maximum-Intensity-Projektion
-			if (mip)
+			// intensity
+			Voxel& value = Voxel();
+
+			for (int z = 0; z < m_Depth; z += m_samples)
 			{
-				// maximum intensity
-				Voxel& maxIntesity = Voxel();
-
-				for (int z = 0; z < m_Depth; z += samples)
+				// Maximum-Intensity-Projektion
+				if (mip)
 				{
-
-					if (this->voxel(x, y, z).operator>(maxIntesity))
+					if (this->voxel(x, y, z).operator>(value))
 					{
-						maxIntesity = this->voxel(x, y, z);
+						value = this->voxel(x, y, z);
 					}
 				}
 
-				out[y*m_Width + x] = maxIntesity.getValue();
-			}
-
-
-			// First-Hit Renderingtechnik
-			else
-			{
-				// first hit
-				Voxel& first = Voxel();
-
-				for (int z = 0; z < m_Depth; z += samples)
+				// First-Hit Renderingtechnik
+				else
 				{
-
 					if (this->voxel(x, y, z).getValue() > 0.f)
 					{
-						first = this->voxel(x, y, z);
+						value = this->voxel(x, y, z);
 						break;
 					}
 				}
-
-				out[y*m_Width + x] = first.getValue();
 			}
-			
+
+			out[y*m_Width + x] = value.getValue();
+
 		}
 	}
 	return out;
+}
+
+void Volume::setSampleDistance(int distance)
+{
+	m_samples = distance;
 }
 
 void Volume::setMip()
