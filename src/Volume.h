@@ -85,6 +85,7 @@ class Volume
 		void					setMip();
 		void					setFirstHit();
 		void					setAlphaCompositing();
+		int						getSampleDistance();
 
 	private:
 

@@ -348,3 +348,8 @@ void Volume::setAlphaCompositing()
 	mip = false;
 	firstHit = false;
 }
+
+int Volume::getSampleDistance()
+{
+	return m_samples;
+}

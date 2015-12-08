@@ -30,7 +30,8 @@ class MainWindow : public QMainWindow
 		void			openFileAction();
 		void			closeAction();
 		void			chooseRenderingTechnique();
-		void			setSampleDistance(int distance);
+		void			setSlider(int distance);
+		void			setDistance();
 		void			startRendering();
 		
 
@@ -61,6 +62,7 @@ class MainWindow : public QMainWindow
 		MultiSet			*m_MultiSet;					// for Multivariate Data
 
 		bool				success = false;
+		int					m_sample;
 
 };
 

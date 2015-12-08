@@ -17,7 +17,8 @@ MainWindow::MainWindow(QWidget *parent)
 	connect(m_Ui->radioMIP, SIGNAL(clicked()), this, SLOT(chooseRenderingTechnique()));
 	connect(m_Ui->radioAC, SIGNAL(clicked()), this, SLOT(chooseRenderingTechnique()));
 	connect(m_Ui->renderButton, SIGNAL(clicked()), this, SLOT(startRendering()));
-	connect(m_Ui->sampleSlider, SIGNAL(valueChanged(int)), this, SLOT(setSampleDistance(int)));
+	connect(m_Ui->sampleSlider, SIGNAL(valueChanged(int)), this, SLOT(setSlider(int)));
+	connect(m_Ui->sampleSlider, SIGNAL(sliderReleased()), this, SLOT(setDistance()));
 
 	/*connect(m_Ui->xRotSlider, SIGNAL(valueChanged(int)), m_Ui->myGLWidget, SLOT(setXRotation(int)));
 	connect(m_Ui->yRotSlider, SIGNAL(valueChanged(int)), m_Ui->myGLWidget, SLOT(setYRotation(int)));
@@ -95,6 +96,11 @@ void MainWindow::openFileAction()
 			else if (m_FileType.type == VECTORFIELD) type = "VECTORFIELD";
 			else if (m_FileType.type == MULTIVARIATE) type = "MULTIVARIATE";
 			m_Ui->labelTop->setText("File LOADED [" + filename + "] - Type [" + type + "]");
+
+
+			// sample slider
+			m_Ui->sampleSlider->setRange(1, m_Volume->depth());
+			m_Ui->sampleSlider->setValue(m_Volume->getSampleDistance());
 		}
 		else
 		{
@@ -134,13 +140,31 @@ void MainWindow::chooseRenderingTechnique()
 	}
 }
 
-void MainWindow::setSampleDistance(int distance)
+void MainWindow::setSlider(int distance)
 {
-	std::cout << "set sample distance: " << distance << std::endl;
-	m_Volume->setSampleDistance(distance);
+	m_sample = distance;
+
+	if (success)
+	{
+		//std::cout << "set sample distance: " << distance << std::endl;
+		m_Ui->sliderTxt->setText(QString::number(distance));
+		QApplication::processEvents();
+	}
+}
+
+void MainWindow::setDistance()
+{
+	if (success)
+	{
+		std::cout << "set sample distance: " << m_sample << std::endl;
+		m_Volume->setSampleDistance(m_sample);
+	}
 }
 
 void MainWindow::startRendering()
 {
-	m_Ui->myGLWidget->startRendering();
+	if (success)
+	{
+		m_Ui->myGLWidget->startRendering();
+	}
 }
