@@ -82,6 +82,7 @@ class Volume
 		std::vector<float>		rayCasting();
 
 		void					setSampleDistance(int distance);
+		void					setTransparency(float alpha);
 		void					setMip();
 		void					setFirstHit();
 		void					setAlphaCompositing();

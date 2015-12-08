@@ -30,9 +30,11 @@ class MainWindow : public QMainWindow
 		void			openFileAction();
 		void			closeAction();
 		void			chooseRenderingTechnique();
-		void			setSlider(int distance);
-		void			setDistance();
+		void			setSampleSlider(int distance);
+		void			setSampleDistance();
 		void			startRendering();
+		void			setTransSlider(int alpha);
+		void			setTransAlpha();
 		
 
 	private:
@@ -63,6 +65,7 @@ class MainWindow : public QMainWindow
 
 		bool				success = false;
 		int					m_sample;
+		int				m_alpha;
 
 };
 

@@ -328,6 +328,11 @@ void Volume::setSampleDistance(int distance)
 	m_samples = distance;
 }
 
+void Volume::setTransparency(float alpha)
+{
+	m_transparency = alpha;
+}
+
 void Volume::setMip()
 {
 	mip = true;
