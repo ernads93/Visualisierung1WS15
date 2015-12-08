@@ -316,3 +316,30 @@ void Volume::setFirstHit()
 	firstHit = true;
 	mip = false;
 }
+
+//Alpha-Compositing
+std::vector<float> Volume::alphaCompositing()
+{
+	std::vector<float> out;
+	out.resize(m_Width * m_Height);
+
+	for (int x = 0; x < m_Width; x++)
+	{
+		for (int y = 0; y < m_Height; y++)
+		{
+
+			// Compositions Faktor
+			float alpha = 0.0;
+			for (int z = 0; alpha < 1.0 && z < m_Depth; z++)
+			{
+				alpha += this->voxel(x, y, z).getValue() * ((1.0 - z / m_Depth)*0.1);
+				if (alpha > 1.0) {
+					alpha = 1.0;
+				}
+
+			}
+			out[y*m_Width + x] = alpha;
+		}
+	}
+	return out;
+}
