@@ -56,9 +56,11 @@ class MainWindow : public QMainWindow
 			DataType		type;
 		}									 m_FileType;
 
-		Volume								*m_Volume;						// for Volume-Rendering
-		VectorField							*m_VectorField;					// for Flow-Visualisation
-		MultiSet							*m_MultiSet;					// for Multivariate Data
+		Volume				*m_Volume;						// for Volume-Rendering
+		VectorField			*m_VectorField;					// for Flow-Visualisation
+		MultiSet			*m_MultiSet;					// for Multivariate Data
+
+		bool				success = false;
 
 };
 

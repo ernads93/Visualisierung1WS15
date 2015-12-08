@@ -15,6 +15,7 @@ MainWindow::MainWindow(QWidget *parent)
 	connect(m_Ui->actionClose, SIGNAL(triggered()), this, SLOT(closeAction()));
 	connect(m_Ui->radioFH, SIGNAL(clicked()), this, SLOT(chooseRenderingTechnique()));
 	connect(m_Ui->radioMIP, SIGNAL(clicked()), this, SLOT(chooseRenderingTechnique()));
+	connect(m_Ui->radioAC, SIGNAL(clicked()), this, SLOT(chooseRenderingTechnique()));
 	connect(m_Ui->renderButton, SIGNAL(clicked()), this, SLOT(startRendering()));
 	connect(m_Ui->sampleSlider, SIGNAL(valueChanged(int)), this, SLOT(setSampleDistance(int)));
 
@@ -44,7 +45,6 @@ void MainWindow::openFileAction()
 		// store filename
 		m_FileType.filename = filename;
 		std::string fn = filename.toStdString();
-		bool success = false;
 
 		// progress bar and top label
 		m_Ui->progressBar->setEnabled(true);
@@ -61,7 +61,7 @@ void MainWindow::openFileAction()
 			success = m_Volume->loadFromFile(filename, m_Ui->progressBar);
 
 			if (success) {
-				//m_Volume->setFirstHit();
+				//m_Volume->setAlphaCompositing();
 				m_Ui->myGLWidget->setVolume(m_Volume);
 			}
 
@@ -112,16 +112,25 @@ void MainWindow::closeAction()
 
 void MainWindow::chooseRenderingTechnique()
 {
-	if (m_Ui->radioMIP->isChecked())
+	if (success)
 	{
-		std::cout << "set rendering technique MIP" << std::endl;
-		m_Volume->setMip();
-	}
+		if (m_Ui->radioMIP->isChecked())
+		{
+			std::cout << "set rendering technique MIP" << std::endl;
+			m_Volume->setMip();
+		}
 
-	if (m_Ui->radioFH->isChecked())
-	{
-		std::cout << "set rendering technique first hit" << std::endl;
-		m_Volume->setFirstHit();
+		if (m_Ui->radioFH->isChecked())
+		{
+			std::cout << "set rendering technique first hit" << std::endl;
+			m_Volume->setFirstHit();
+		}
+
+		if (m_Ui->radioAC->isChecked())
+		{
+			std::cout << "set rendering technique alpha compositing" << std::endl;
+			m_Volume->setAlphaCompositing();
+		}
 	}
 }
 

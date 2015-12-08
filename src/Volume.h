@@ -80,11 +80,11 @@ class Volume
 
 		bool					loadFromFile(QString filename, QProgressBar* progressBar);
 		std::vector<float>		rayCasting();
-		std::vector<float>		alphaCompositing();
 
 		void					setSampleDistance(int distance);
 		void					setMip();
 		void					setFirstHit();
+		void					setAlphaCompositing();
 
 	private:
 
@@ -98,5 +98,6 @@ class Volume
 
 		bool					mip = true;
 		bool					firstHit = false;
+		bool					alphaCompositing = false;
 
 };

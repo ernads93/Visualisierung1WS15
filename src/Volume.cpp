@@ -271,6 +271,9 @@ std::vector<float> Volume::rayCasting()
 			// intensity
 			Voxel& value = Voxel();
 
+			// Compositions Faktor
+			float alpha = 0.0;
+
 			for (int z = 0; z < m_Depth; z += m_samples)
 			{
 				// Maximum-Intensity-Projektion
@@ -283,7 +286,7 @@ std::vector<float> Volume::rayCasting()
 				}
 
 				// First-Hit Renderingtechnik
-				else
+				if (firstHit)
 				{
 					if (this->voxel(x, y, z).getValue() > 0.f)
 					{
@@ -291,9 +294,27 @@ std::vector<float> Volume::rayCasting()
 						break;
 					}
 				}
+
+				// Alpha-Compositing
+				else
+				{
+					alpha += this->voxel(x, y, z).getValue() * ((1.0 - z / m_Depth) * 0.1);
+					
+					if (alpha > 1.0) {
+						alpha = 1.0;
+						break;
+					}
+				}
 			}
 
-			out[y*m_Width + x] = value.getValue();
+			if (alphaCompositing)
+			{
+				out[y*m_Width + x] = alpha;
+			}
+			else
+			{
+				out[y*m_Width + x] = value.getValue();
+			}
 
 		}
 	}
@@ -309,37 +330,19 @@ void Volume::setMip()
 {
 	mip = true;
 	firstHit = false;
+	alphaCompositing = false;
 }
 
 void Volume::setFirstHit()
 {
 	firstHit = true;
 	mip = false;
+	alphaCompositing = false;
 }
 
-//Alpha-Compositing
-std::vector<float> Volume::alphaCompositing()
+void Volume::setAlphaCompositing()
 {
-	std::vector<float> out;
-	out.resize(m_Width * m_Height);
-
-	for (int x = 0; x < m_Width; x++)
-	{
-		for (int y = 0; y < m_Height; y++)
-		{
-
-			// Compositions Faktor
-			float alpha = 0.0;
-			for (int z = 0; alpha < 1.0 && z < m_Depth; z++)
-			{
-				alpha += this->voxel(x, y, z).getValue() * ((1.0 - z / m_Depth)*0.1);
-				if (alpha > 1.0) {
-					alpha = 1.0;
-				}
-
-			}
-			out[y*m_Width + x] = alpha;
-		}
-	}
-	return out;
+	alphaCompositing = true;
+	mip = false;
+	firstHit = false;
 }
