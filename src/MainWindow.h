@@ -35,6 +35,8 @@ class MainWindow : public QMainWindow
 		void			startRendering();
 		void			setTransSlider(int alpha);
 		void			setTransAlpha();
+		void			setScaleSlider(int factor);
+		void			setScaleFactor();
 		
 
 	private:
@@ -65,7 +67,8 @@ class MainWindow : public QMainWindow
 
 		bool				success = false;
 		int					m_sample;
-		int				m_alpha;
+		int					m_alpha;
+		int					m_factor;
 
 };
 

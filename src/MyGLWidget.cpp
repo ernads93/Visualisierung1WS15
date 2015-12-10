@@ -44,10 +44,10 @@ void MyGLWidget::paintGL()
 	{
 		std::cout << "MyGLWidget start raycasting" << std::endl;
 		
-		std::vector<float> pixels = volume->rayCasting();
+		std::vector<float> pixels = volume->rayCasting2();
 
-		int width = volume->width();
-		int height = volume->height();
+		int width = volume->width() * volume->getScaleFactor();
+		int height = volume->height() * volume->getScaleFactor();
 
 		glDrawPixels(width, height, GL_LUMINANCE, GL_FLOAT, &pixels[0]);
 

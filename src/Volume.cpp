@@ -221,7 +221,7 @@ bool Volume::loadFromFile(QString filename, QProgressBar* progressBar)
 	// set sample steps
 	m_samples = round(m_Depth / 5);
 	//set alpha opacitie
-	m_transparency = 0.2;
+	m_transparency = 0.2f;
 
 
 	// read volume data
@@ -257,6 +257,7 @@ bool Volume::loadFromFile(QString filename, QProgressBar* progressBar)
 
 std::vector<float> Volume::rayCasting()
 {
+	m_factor = 1;
 
 	std::vector<float> out;
 	out.resize(m_Width * m_Height);
@@ -265,11 +266,6 @@ std::vector<float> Volume::rayCasting()
 	{
 		for (int y = 0; y < m_Height; y++)
 		{
-			// start/end of ray
-			glm::vec3 start(x, y, 0);
-			glm::vec3 end(x, y, m_Depth);
-			
-
 			// intensity
 			Voxel& value = Voxel();
 
@@ -297,6 +293,12 @@ std::vector<float> Volume::rayCasting()
 					}
 				}
 
+				// Average  rendering
+				if (average)
+				{
+					value = value.operator+(this->voxel(x, y, z));
+				}
+
 				// Alpha-Compositing
 				else
 				{
@@ -309,23 +311,122 @@ std::vector<float> Volume::rayCasting()
 				}
 			}
 
-			if (alphaCompositing)
-			{
-				out[y*m_Width + x] = alpha;
-			}
-			else
-			{
-				out[y*m_Width + x] = value.getValue();
-			}
-
+			if (average)		  out[y*m_Width + x] = (value.operator/=(m_Depth / m_samples)).getValue();
+			if (alphaCompositing) out[y*m_Width + x] = alpha;
+			else				  out[y*m_Width + x] = value.getValue();
 		}
 	}
 	return out;
 }
 
+std::vector<float> Volume::rayCasting2()
+{
+	float pixel_width = m_Width * m_factor;
+	float pixel_height = m_Height * m_factor;
+
+	std::vector<float> out;
+	out.resize(pixel_width * pixel_height);
+
+	for (int x = 0; x < pixel_width; x++)
+	{
+		for (int y = 0; y < pixel_height; y++)
+		{
+			// intensity
+			Voxel& value = Voxel();
+
+			// Compositions Faktor
+			float alpha = 0.0;
+
+			// current voxel
+			Voxel& voxel = Voxel();
+
+			// position in volume
+			float p_x = (float)x / (float)m_factor;
+			float p_y = (float)y / (float)m_factor;
+
+
+			for (int z = 0; z < m_Depth; z += m_samples)
+			{
+				// interpolated voxel
+				if (((float)x / (float)m_factor) != (int)((float)x / (float)m_factor))
+				{
+					voxel = getInterpolatedVoxel(p_x, p_y, z);
+				}
+				else
+				{
+					voxel = this->voxel((int)p_x, (int)p_y, z);
+				}
+
+				// Maximum-Intensity-Projektion
+				if (mip)
+				{
+					if (voxel.operator>(value))
+					{
+						value = voxel;
+					}
+				}
+
+				// First-Hit Renderingtechnik
+				if (firstHit)
+				{
+					if (voxel.getValue() > 0.f)
+					{
+						value = voxel;
+						break;
+					}
+				}
+
+				// Average  rendering
+				if (average)
+				{
+					value = value.operator+(voxel);
+				}
+
+				// Alpha-Compositing
+				else
+				{
+					alpha += voxel.getValue() * ((1.0 - z / m_Depth) * m_transparency);
+
+					if (alpha > 1.0) {
+						alpha = 1.0;
+						break;
+					}
+				}
+			}
+
+			if (average)		  out[y * pixel_width + x] = (value.operator/=(m_Depth / m_samples)).getValue();
+			if (alphaCompositing) out[y * pixel_width + x] = alpha;
+			else				  out[y * pixel_width + x] = value.getValue();
+		}
+	}
+	return out;
+}
+Voxel Volume::getInterpolatedVoxel(float x, float y, int z)
+{
+	int x0 = floor(x);
+	int x1 = ceil(x);
+	int y0 = floor(y);
+	int y1 = ceil(y);
+
+	if (x1 == m_Width) x1 = m_Width - 1;
+	if (y1 == m_Height) y1 = m_Height - 1;
+
+	float v1 = this->voxel(x0, y0, z).getValue();
+	float v2 = this->voxel(x1, y0, z).getValue();
+	float v3 = this->voxel(x1, y1, z).getValue();
+	float v4 = this->voxel(x0, y1, z).getValue();
+
+	return Voxel((v1 + v2 + v3  + v4) / 4);
+}
+
 void Volume::setSampleDistance(int distance)
 {
 	m_samples = distance;
+}
+
+void Volume::setScaleFactor(int factor)
+{
+	m_factor = factor;
 }
 
 void Volume::setTransparency(float alpha)
@@ -338,6 +439,7 @@ void Volume::setMip()
 	mip = true;
 	firstHit = false;
 	alphaCompositing = false;
+	average = false;
 }
 
 void Volume::setFirstHit()
@@ -345,6 +447,7 @@ void Volume::setFirstHit()
 	firstHit = true;
 	mip = false;
 	alphaCompositing = false;
+	average = false;
 }
 
 void Volume::setAlphaCompositing()
@@ -352,9 +455,23 @@ void Volume::setAlphaCompositing()
 	alphaCompositing = true;
 	mip = false;
 	firstHit = false;
+	average = false;
+}
+
+void Volume::setAverage()
+{
+	average = true;
+	alphaCompositing = false;
+	mip = false;
+	firstHit = false;
 }
 
 int Volume::getSampleDistance()
 {
 	return m_samples;
+}
+
+int Volume::getScaleFactor()
+{
+	return m_factor;
 }

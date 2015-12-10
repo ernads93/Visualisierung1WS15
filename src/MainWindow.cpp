@@ -16,15 +16,14 @@ MainWindow::MainWindow(QWidget *parent)
 	connect(m_Ui->radioFH, SIGNAL(clicked()), this, SLOT(chooseRenderingTechnique()));
 	connect(m_Ui->radioMIP, SIGNAL(clicked()), this, SLOT(chooseRenderingTechnique()));
 	connect(m_Ui->radioAC, SIGNAL(clicked()), this, SLOT(chooseRenderingTechnique()));
+	connect(m_Ui->radioAverage, SIGNAL(clicked()), this, SLOT(chooseRenderingTechnique()));
 	connect(m_Ui->renderButton, SIGNAL(clicked()), this, SLOT(startRendering()));
 	connect(m_Ui->sampleSlider, SIGNAL(valueChanged(int)), this, SLOT(setSampleSlider(int)));
 	connect(m_Ui->sampleSlider, SIGNAL(sliderReleased()), this, SLOT(setSampleDistance()));
 	connect(m_Ui->transSlider, SIGNAL(valueChanged(int)), this, SLOT(setTransSlider(int)));
 	connect(m_Ui->transSlider, SIGNAL(sliderReleased()), this, SLOT(setTransAlpha()));
-
-	/*connect(m_Ui->xRotSlider, SIGNAL(valueChanged(int)), m_Ui->myGLWidget, SLOT(setXRotation(int)));
-	connect(m_Ui->yRotSlider, SIGNAL(valueChanged(int)), m_Ui->myGLWidget, SLOT(setYRotation(int)));
-	connect(m_Ui->zRotSlider, SIGNAL(valueChanged(int)), m_Ui->myGLWidget, SLOT(setYRotation(int)));*/
+	connect(m_Ui->scaleSlider, SIGNAL(valueChanged(int)), this, SLOT(setScaleSlider(int)));
+	connect(m_Ui->scaleSlider, SIGNAL(sliderReleased()), this, SLOT(setScaleFactor()));
 }
 
 MainWindow::~MainWindow()
@@ -103,6 +102,8 @@ void MainWindow::openFileAction()
 			// sample slider
 			m_Ui->sampleSlider->setRange(1, m_Volume->depth());
 			m_Ui->sampleSlider->setValue(m_Volume->getSampleDistance());
+			m_Ui->scaleSlider->setValue(1);
+			m_Ui->transSlider->setValue(1);
 		}
 		else
 		{
@@ -132,6 +133,12 @@ void MainWindow::chooseRenderingTechnique()
 		{
 			std::cout << "set rendering technique first hit" << std::endl;
 			m_Volume->setFirstHit();
+		}
+
+		if (m_Ui->radioAverage->isChecked())
+		{
+			std::cout << "set rendering technique average" << std::endl;
+			m_Volume->setAverage();
 		}
 
 		if (m_Ui->radioAC->isChecked())
@@ -172,6 +179,22 @@ void MainWindow::setTransAlpha()
 		float a = (float)m_alpha / 10.f;
 		std::cout << "set alph transparence : " << a << std::endl;
 		m_Volume->setTransparency(a);
+	}
+}
+
+void MainWindow::setScaleSlider(int factor)
+{
+	m_factor = factor;
+	m_Ui->scaleTxt->setText(QString::number(m_factor));
+	QApplication::processEvents();
+}
+
+void MainWindow::setScaleFactor()
+{
+	if (success)
+	{
+		std::cout << "set scale factor : " << m_factor << std::endl;
+		m_Volume->setScaleFactor(m_factor);
 	}
 }
 

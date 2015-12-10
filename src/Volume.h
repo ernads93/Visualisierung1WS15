@@ -80,13 +80,17 @@ class Volume
 
 		bool					loadFromFile(QString filename, QProgressBar* progressBar);
 		std::vector<float>		rayCasting();
+		std::vector<float>		rayCasting2();
 
 		void					setSampleDistance(int distance);
 		void					setTransparency(float alpha);
 		void					setMip();
 		void					setFirstHit();
 		void					setAlphaCompositing();
+		void					setAverage();
 		int						getSampleDistance();
+		void					setScaleFactor(int factor);
+		int						getScaleFactor();
 
 	private:
 
@@ -98,9 +102,13 @@ class Volume
 		int						m_Size;
 		int						m_samples;
 		float				    m_transparency;
+		int						m_factor = 1;
 
 		bool					mip = true;
 		bool					firstHit = false;
 		bool					alphaCompositing = false;
+		bool					average = false;
+
+		Voxel					getInterpolatedVoxel(float x, float y, int z);
 
 };
